@@ -12,6 +12,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +40,9 @@ class AccountControllerTest {
 
     @MockBean
     JavaMailSender javaMailSender;
+
+    @Autowired
+    AccountService accountService;
 
     @DisplayName("회원 가입 화면 보이는지 테스트")
     @Test
@@ -113,5 +118,40 @@ class AccountControllerTest {
                 .andExpect(model().attributeExists("numberOfUser"))
                 .andExpect(view().name("account/checked-email"))
                 .andExpect(authenticated().withUsername("sjlee"));
+    }
+
+    @DisplayName("인증 메일 재전송 - 인증메일 재전송 가능")
+    @Test
+    void resend_email_token_after_one_hour() throws Exception {
+        Account account = Account.builder()
+                .email("test@email.com")
+                .nickname("sjlee")
+                .password("12345678")
+                .build();
+        Account newAccount = accountRepository.save(account);
+        newAccount.generateEmailCheckToken();
+        newAccount.setEmailCheckTokenGeneratedAt(LocalDateTime.now().minusHours(2)); // 시간 2시간 당겨서 재정의
+
+        accountService.login(newAccount);
+
+        mockMvc.perform(get("/resend-confirm-email"))
+                .andExpect(view().name("redirect:/"));
+    }
+
+    @DisplayName("인증 메일 재전송 - 인증메일 재전송 불가능")
+    @Test
+    void resend_email_token_before_one_hour() throws Exception {
+        Account account = Account.builder()
+                .email("test@email.com")
+                .nickname("sjlee")
+                .password("12345678")
+                .build();
+        Account newAccount = accountRepository.save(account);
+        newAccount.generateEmailCheckToken();
+
+        accountService.login(newAccount);
+
+        mockMvc.perform(get("/resend-confirm-email"))
+                .andExpect(view().name("account/check-email"));
     }
 }
