@@ -62,7 +62,7 @@ public class Account {
 
     private boolean studyUpdatedByWeb;
 
-    public void geneateEmailCheckToken() {
+    public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
     }
 }

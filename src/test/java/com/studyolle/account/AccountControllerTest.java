@@ -68,6 +68,7 @@ class AccountControllerTest {
 
         Account account = accountRepository.findByEmail("sjlee@email.com");
         assertNotNull(account);
+        assertNotNull(account.getEmailCheckToken());
         assertNotEquals(account.getPassword(), "12345678");
 
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
