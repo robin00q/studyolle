@@ -1,6 +1,7 @@
 package com.studyolle.account;
 
 import com.studyolle.domain.Account;
+import com.studyolle.settings.PasswordForm;
 import com.studyolle.settings.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -91,6 +92,11 @@ public class AccountService implements UserDetailsService {
         account.setLocation(profile.getLocation());
         account.setProfileImage(profile.getProfileImage());
         // TODO 프로필 이미지
+        accountRepository.save(account);
+    }
+
+    public void updatePassword(Account account, PasswordForm passwordForm) {
+        account.setPassword(passwordEncoder.encode(passwordForm.getNewPassword()));
         accountRepository.save(account);
     }
 }
