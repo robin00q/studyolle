@@ -1,4 +1,4 @@
-package com.studyolle.account.study;
+package com.studyolle.study;
 
 import com.studyolle.domain.Study;
 import org.springframework.data.jpa.repository.EntityGraph;

@@ -1,7 +1,7 @@
-package com.studyolle.account.study.validator;
+package com.studyolle.study.validator;
 
-import com.studyolle.account.study.StudyRepository;
-import com.studyolle.account.study.form.StudyForm;
+import com.studyolle.study.StudyRepository;
+import com.studyolle.study.form.StudyForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

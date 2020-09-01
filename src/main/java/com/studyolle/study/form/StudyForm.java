@@ -1,9 +1,8 @@
-package com.studyolle.account.study.form;
+package com.studyolle.study.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Lob;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 

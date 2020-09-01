@@ -1,8 +1,8 @@
-package com.studyolle.account.study;
+package com.studyolle.study;
 
 import com.studyolle.account.CurrentAccount;
-import com.studyolle.account.study.form.StudyForm;
-import com.studyolle.account.study.validator.StudyFormValidator;
+import com.studyolle.study.form.StudyForm;
+import com.studyolle.study.validator.StudyFormValidator;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -43,9 +44,9 @@ public class StudyController {
     }
 
     @PostMapping("/new-study")
-    public String newStudySubmit(@CurrentAccount Account account, @Valid StudyForm studyForm, Errors errors, Model model) {
+    public String newStudySubmit(@CurrentAccount Account account, @Valid @ModelAttribute StudyForm studyForm, Errors errors, Model model) {
         if(errors.hasErrors()) {
-            model.addAttribute(studyForm);
+            model.addAttribute(account );
             return "study/form";
         }
 
@@ -58,5 +59,12 @@ public class StudyController {
         model.addAttribute(account);
         model.addAttribute(studyRepository.findByPath(path));
         return "study/view";
+    }
+
+    @GetMapping("/study/{path}/members")
+    public String viewStudyMembers(@CurrentAccount Account account, @PathVariable String path, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(studyRepository.findByPath(path));
+        return "study/members";
     }
 }
