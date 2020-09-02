@@ -1,22 +1,10 @@
 package com.studyolle.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -51,7 +39,7 @@ public class Account {
 
     private String occupation;
 
-    private String location; // varchar(255)
+    private String location;
 
     @Lob @Basic(fetch = FetchType.EAGER)
     private String profileImage;
@@ -90,5 +78,9 @@ public class Account {
 
     public boolean canSendConfirmEmail() {
         return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public boolean isManagerOf(Study study) {
+        return study.getManagers().contains(this);
     }
 }

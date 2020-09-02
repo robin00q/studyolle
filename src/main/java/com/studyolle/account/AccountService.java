@@ -8,12 +8,13 @@ import com.studyolle.domain.Zone;
 import com.studyolle.mail.EmailMessage;
 import com.studyolle.mail.EmailService;
 import com.studyolle.settings.form.Notifications;
-import com.studyolle.settings.form.PasswordForm;
 import com.studyolle.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.NameTokenizers;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +57,6 @@ public class AccountService implements UserDetailsService {
         signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
         Account account = modelMapper.map(signUpForm, Account.class);
         account.generateEmailCheckToken();
-
         return accountRepository.save(account);
     }
 
@@ -66,7 +68,6 @@ public class AccountService implements UserDetailsService {
         context.setVariable("linkName", "이메일 인증하기");
         context.setVariable("message", "스터디올래 서비스를 사용하려면 링크를 클릭하세요.");
         context.setVariable("host", appProperties.getHost());
-
         String message = templateEngine.process("mail/simple-link", context);
 
         EmailMessage emailMessage = EmailMessage.builder()
@@ -82,8 +83,7 @@ public class AccountService implements UserDetailsService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account),
                 account.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 
@@ -91,10 +91,11 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(emailOrNickname);
-        if(account == null) {
+        if (account == null) {
             account = accountRepository.findByNickname(emailOrNickname);
         }
-        if(account == null) {
+
+        if (account == null) {
             throw new UsernameNotFoundException(emailOrNickname);
         }
 
@@ -111,15 +112,12 @@ public class AccountService implements UserDetailsService {
         accountRepository.save(account);
     }
 
-    public void updatePassword(Account account, PasswordForm passwordForm) {
-        account.setPassword(passwordEncoder.encode(passwordForm.getNewPassword()));
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
     }
 
     public void updateNotifications(Account account, Notifications notifications) {
-        modelMapper.getConfiguration()
-                .setDestinationNameTokenizer(NameTokenizers.UNDERSCORE)
-                .setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
         modelMapper.map(notifications, account);
         accountRepository.save(account);
     }
@@ -176,5 +174,13 @@ public class AccountService implements UserDetailsService {
     public void removeZone(Account account, Zone zone) {
         Optional<Account> byId = accountRepository.findById(account.getId());
         byId.ifPresent(a -> a.getZones().remove(zone));
+    }
+
+    public Account getAccount(String nickname) {
+        Account account = accountRepository.findByNickname(nickname);
+        if (account == null) {
+            throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
+        }
+        return account;
     }
 }
