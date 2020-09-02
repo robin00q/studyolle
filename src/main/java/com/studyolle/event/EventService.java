@@ -20,6 +20,6 @@ public class EventService {
         event.setCreatedBy(account);
         event.setCreatedDateTime(LocalDateTime.now());
         event.setStudy(study);
-        return event;
+        return eventRepository.save(event);
     }
 }
