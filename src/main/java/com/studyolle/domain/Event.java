@@ -27,7 +27,7 @@ public class Event {
     private Study study;
 
     @ManyToOne
-    private Account account;
+    private Account createdBy;
 
     @Column(nullable = false)
     private String title;
