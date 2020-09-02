@@ -7,8 +7,8 @@ import com.studyolle.account.AccountService;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Tag;
 import com.studyolle.domain.Zone;
-import com.studyolle.settings.form.TagForm;
-import com.studyolle.settings.form.ZoneForm;
+import com.studyolle.tag.TagForm;
+import com.studyolle.zone.ZoneForm;
 import com.studyolle.tag.TagRepository;
 import com.studyolle.zone.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -23,26 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.studyolle.settings.SettingsController.ACCOUNT;
-import static com.studyolle.settings.SettingsController.PASSWORD;
-import static com.studyolle.settings.SettingsController.PROFILE;
-import static com.studyolle.settings.SettingsController.ROOT;
-import static com.studyolle.settings.SettingsController.SETTINGS;
-import static com.studyolle.settings.SettingsController.TAGS;
-import static com.studyolle.settings.SettingsController.ZONES;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.studyolle.settings.SettingsController.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 @SpringBootTest
