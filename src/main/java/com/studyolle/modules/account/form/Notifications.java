@@ -1,10 +1,8 @@
 package com.studyolle.modules.account.form;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class Notifications {
 
     private boolean studyCreatedByEmail;
@@ -18,4 +16,5 @@ public class Notifications {
     private boolean studyUpdatedByEmail;
 
     private boolean studyUpdatedByWeb;
+
 }
