@@ -1,6 +1,5 @@
 package com.studyolle.infra.config;
 
-import com.studyolle.modules.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +16,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 
 @Configuration
-@RequiredArgsConstructor
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -28,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/login", "/sign-up", "/check-email-token",
-                        "/email-login", "/login-by-email").permitAll()
+                        "/email-login", "/login-by-email", "/search/study").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .anyRequest().authenticated();
 
@@ -37,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.logout()
                 .logoutSuccessUrl("/");
+
         http.rememberMe()
                 .userDetailsService(userDetailsService)
                 .tokenRepository(tokenRepository());
@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) {
+    public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .mvcMatchers("/node_modules/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
